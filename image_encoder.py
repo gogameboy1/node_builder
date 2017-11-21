@@ -65,16 +65,40 @@ with open('image_vector.csv', 'w') as f:
         print ('image ' + str(index) + ',' + str(vec), file=f)
 
 
-vector_1, vector_2, vector_3 = image_vec_list
-pdb.set_trace()
+vector_1 = image_vec_list[0]
 
-print ("vector 1 and 1 : " + str(cosine_similarity(vector_1, vector_1)))
-
-print ("vector 1 and 2 : " + str(cosine_similarity(vector_1, vector_2)))
-
-print ("vector 1 and 3 : " + str(cosine_similarity(vector_1, vector_3)))
-
-print ("vector 2 and 3 : " + str(cosine_similarity(vector_2, vector_3)))
+memories = [vector_1]
 
 
+# print ("vector 1 and 1 : " + str(cosine_similarity(vector_1, vector_1)))
+#
+# print ("vector 1 and 2 : " + str(cosine_similarity(vector_1, vector_2)))
+#
+# print ("vector 1 and 3 : " + str(cosine_similarity(vector_1, vector_3)))
+#
+# print ("vector 2 and 3 : " + str(cosine_similarity(vector_2, vector_3)))
 
+
+def memory_check(memories, image):
+
+    familiar_list = []
+    for memory in memories:
+        familiar_index = cosine_similarity(memory, image)
+        familiar_list.append(familiar_index)
+
+    if max(familiar_list) < 0.5:
+        memories.append(image)
+        return True, memories
+    else:
+        return False, memories
+
+
+for vec in image_vec_list:
+    vec = vec.reshape(1, 4096)
+    unseen, memories = memory_check(memories, vec)
+    if unseen:
+        print ("Build node!\n")
+    else:
+        print ("Keep going ...\n")
+
+print ("Done.")
